@@ -17,3 +17,18 @@ class Cache:
         key = str(uuid.uuid4())
         self._redis.set(key, data)
         return key
+    
+    def get(self, key: str, fn: Optional[callable] = None) -> Union[str, bytes, int, float]:
+        """Get method"""
+        data = self._redis.get(key)
+        if fn:
+            return fn(data)
+        return data
+    
+    def get_str(self, data: bytes) -> str:
+        """Get str method"""
+        return data.decode('utf-8')
+    
+    def get_int(self, data: bytes) -> int:
+        """Get int method"""
+        return int.from_bytes(data, byteorder='big')
