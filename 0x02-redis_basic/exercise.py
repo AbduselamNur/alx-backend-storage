@@ -18,6 +18,7 @@ def count_calls(method: Callable) -> Callable:
 
     return wrapper
 
+
 def call_history(method: Callable) -> Callable:
     """returns a Callable"""
     input_list = method.__qualname__ + ":inputs"
@@ -30,8 +31,9 @@ def call_history(method: Callable) -> Callable:
         output = method(self, *args, **kwargs)
         self._redis.rpush(output_list, output)
         return output
-    
+
     return wrapper
+
 
 def replay(method: Callable) -> None:
     """replay the history of calls of a particular function"""
@@ -43,6 +45,7 @@ def replay(method: Callable) -> None:
     print(f"{key} was called {count} times:")
     for i, o in zip(inputs, outputs):
         print(f"{key}(*{i.decode('utf-8')}) -> {o.decode('utf-8')}")
+
 
 class Cache:
     """Cache class"""
@@ -58,18 +61,19 @@ class Cache:
         key = str(uuid.uuid4())
         self._redis.set(key, data)
         return key
-    
-    def get(self, key: str, fn: Optional[callable] = None) -> Union[str, bytes, int, float]:
+
+    def get(self, key: str, fn: Optional[callable] = None) -> Union[
+            str, bytes, int, float]:
         """Get method"""
         data = self._redis.get(key)
         if fn:
             return fn(data)
         return data
-    
+
     def get_str(self, data: bytes) -> str:
         """Get str method"""
         return data.decode('utf-8')
-    
+
     def get_int(self, data: bytes) -> int:
         """Get int method"""
         return int.from_bytes(data, byteorder='big')
