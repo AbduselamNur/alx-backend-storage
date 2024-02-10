@@ -2,8 +2,16 @@
 """Writing strings to Redis"""
 import redis
 import uuid
-from typing import Union, AnyStr, Optional
+from typing import Union, AnyStr, Optional, Callable
 
+
+def count_calls(method: Callable) -> Callable:
+    """Count calls decorator"""
+    def wrapper(self, *args, **kwargs):
+        """Wrapper function"""
+        self._redis.incr(method.__qualname__)
+        return method(self, *args, **kwargs)
+    return wrapper
 
 class Cache:
     """Cache class"""
